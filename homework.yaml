@@ -1,0 +1,37 @@
+---
+- name: Homework playbook for Netology ML
+  hosts: all
+  become: yes
+  vars:
+    packages:
+      - net-tools
+      - git
+      - tree
+      - htop
+      - mc
+      - vim
+    users:
+      - devops_1
+      - test_1
+
+  tasks:
+    - name: Ensure hosts are reachable
+      ping:
+
+    - name: Update package repository cache and install packages
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+        state: present
+
+    - name: Copy test.txt file to remote hosts
+      copy:
+        src: /path/to/local/test.txt
+        dest: /path/to/remote/test.txt
+
+    - name: Create users and their home directories
+      loop: "{{ users }}"
+      user:
+        name: "{{ item }}"
+        state: present
+        create_home: yes
