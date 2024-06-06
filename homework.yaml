@@ -1,7 +1,7 @@
 ---
 - name: Homework playbook for Netology ML
   hosts: all
-  become: yes
+  become: yes  # Используем привилегии sudo
   vars:
     packages:
       - net-tools
@@ -24,10 +24,26 @@
         name: "{{ packages }}"
         state: present
 
+    - name: Create ansible user
+      user:
+        name: ansible
+        state: present
+        create_home: yes
+
+    - name: Ensure /home/ansible directory exists
+      file:
+        path: /home/ansible
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0755'
+
     - name: Copy test.txt file to remote hosts
       copy:
-        src: /path/to/local/test.txt
-        dest: /path/to/remote/test.txt
+        src: /ansible/test.txt
+        dest: /home/ansible/test.txt
+        owner: ansible
+        group: ansible
 
     - name: Create users and their home directories
       loop: "{{ users }}"
